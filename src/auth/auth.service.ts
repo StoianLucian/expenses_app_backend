@@ -58,6 +58,6 @@ export class AuthService {
       });
     }
 
-    return user;
+    return { message: `Succesfully logged in as ${user.email}`, user: user };
   }
 }

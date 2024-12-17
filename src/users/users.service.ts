@@ -27,7 +27,9 @@ export class UsersService {
         [createUserDto.email, createUserDto.password, createUserDto.roleId],
       );
 
-      return `User created`;
+      return {
+        message: `User created, an email was sent in order to acctivate the account`,
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
