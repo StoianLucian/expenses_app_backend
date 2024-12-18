@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
@@ -7,6 +13,7 @@ import * as bcrypt from 'bcryptjs';
 import { MailService } from 'src/mail/mail.service';
 import { TemplatesTypes } from 'src/mail/types/email';
 import { randomBytes } from 'crypto';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +21,8 @@ export class UsersService {
     @InjectRepository(User) private userRepository: Repository<User>,
     private readonly entityManager: EntityManager,
     private readonly mailService: MailService,
+    @Inject(forwardRef(() => TokenService))
+    private readonly tokenService: TokenService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -40,9 +49,9 @@ export class UsersService {
 
     try {
       const user = await this.findUserByEmail(email);
-      // const token = await this.tokenService.generateResetToken(user[0].email);
+      const token = await this.tokenService.generateResetToken(user.email);
 
-      const context = { name: user[0].email };
+      const context = { name: user.email, token: token };
 
       await this.mailService.sendEmail(
         email,
@@ -53,6 +62,14 @@ export class UsersService {
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
+  }
+
+  async resetForgotPassword(token: string, forgotPassowordDto: any) {
+    const { email } = forgotPassowordDto;
+
+    const foundToken = await this.tokenService.validateToken(token, email);
+
+    return foundToken[0];
   }
 
   async findUserById(id: number) {
@@ -66,7 +83,7 @@ export class UsersService {
         throw new HttpException('user not found', HttpStatus.NOT_FOUND);
       }
 
-      return user;
+      return user[0];
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -85,7 +102,7 @@ export class UsersService {
         throw new HttpException('user not found', HttpStatus.NOT_FOUND);
       }
 
-      return user;
+      return user[0];
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -99,26 +116,10 @@ export class UsersService {
   }
 
   async validateUserIsUnique(email: string) {
-    const existingUser = await this.entityManager.query(
-      `
-      SELECT email FROM users WHERE email = ?
-      `,
-      [email],
-    );
+    const existingUser = await this.findUserByEmail(email);
 
-    if (existingUser[0]) {
+    if (existingUser) {
       throw new HttpException('user already exists', HttpStatus.CONFLICT);
     }
-  }
-
-  async generateResetToken(email: string) {
-    const generatedToken = randomBytes(32).toString('hex');
-
-    const token = await this.entityManager.query(
-      `
-        INSERT INTO tokens (token, email, expiry_date) values (?, ?, ?)
-      `,
-      [generatedToken, email, '2024-12-18'],
-    );
   }
 }

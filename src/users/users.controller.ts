@@ -24,4 +24,12 @@ export class UsersController {
   sendForgotPasswordEmail(@Body() forgotPassowordDto: any) {
     return this.usersService.sendForgotPasswordEmail(forgotPassowordDto);
   }
+
+  @Post('forgot-password/:token')
+  resetForgotPassword(
+    @Body() forgotPassowordDto: any,
+    @Param('token') token: string,
+  ) {
+    return this.usersService.resetForgotPassword(token, forgotPassowordDto);
+  }
 }

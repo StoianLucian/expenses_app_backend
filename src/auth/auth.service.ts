@@ -1,5 +1,7 @@
 import {
+  forwardRef,
   HttpException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -11,6 +13,7 @@ import { UsersService } from 'src/users/users.service';
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(forwardRef(() => UsersService))
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
   ) {}
@@ -24,7 +27,7 @@ export class AuthService {
         throw new UnauthorizedException();
       }
 
-      const { password, ...result } = user[0];
+      const { password, ...result } = user;
 
       return result;
     } catch (error) {

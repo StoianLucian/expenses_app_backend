@@ -1,4 +1,11 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateTokenDto } from './dto/create-token.dto';
 import { UpdateTokenDto } from './dto/update-token.dto';
 import { EntityManager } from 'typeorm';
@@ -9,14 +16,15 @@ import { UsersService } from 'src/users/users.service';
 export class TokenService {
   constructor(
     private readonly entityManager: EntityManager,
-    private readonly userService: UsersService,
+    @Inject(forwardRef(() => UsersService))
+    private readonly usersService: UsersService,
   ) {}
 
   async sendForgotPasswordEmail(createTokenDto: CreateTokenDto) {
     try {
       const { email } = createTokenDto;
 
-      const user = await this.userService.findUserByEmail(email);
+      const user = await this.usersService.findUserByEmail(email);
       const generatedToken = this.generateToken(32);
       const currentDate = new Date();
 
@@ -24,7 +32,7 @@ export class TokenService {
         `
       INSERT INTO tokens (email, token, expiry_date) VALUES (?, ?, ?)
       `,
-        [user[0].email, generatedToken, currentDate],
+        [user.email, generatedToken, currentDate],
       );
 
       const tokenId = await this.entityManager.query(
@@ -59,5 +67,32 @@ export class TokenService {
       `,
       [generatedToken, email, '2024-12-18'],
     );
+
+    return generatedToken;
+  }
+
+  async validateToken(token: string, email: string) {
+    const foundToken = await this.findToken(token);
+
+    if (foundToken.email !== email) {
+      throw new UnauthorizedException();
+    }
+
+    return foundToken;
+  }
+
+  async findToken(token: string) {
+    const foundToken = await this.entityManager.query(
+      `
+      SELECT * FROM tokens where token = ?
+      `,
+      [token],
+    );
+
+    if (foundToken.length === 0) {
+      throw new HttpException('UNAUTHORIzED', HttpStatus.FORBIDDEN);
+    }
+
+    return foundToken;
   }
 }
