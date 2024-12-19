@@ -25,18 +25,33 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
+    const { email, password, roleId } = createUserDto;
+
     try {
       await this.validateUserIsUnique(createUserDto.email);
 
-      createUserDto.password = await this.hashPassword(createUserDto.password);
+      const hashedPassword = await this.hashPassword(password);
 
       const user = await this.entityManager.query(
         `INSERT INTO users (email, password, roleId) values (?, ?, ?)`,
-        [createUserDto.email, createUserDto.password, createUserDto.roleId],
+        [email, hashedPassword, roleId],
+      );
+
+      const token = await this.tokenService.generateResetToken(email);
+
+      const context = {
+        token: token,
+        email: email,
+      };
+      await this.mailService.sendEmail(
+        email,
+        'Activate account',
+        TemplatesTypes.ACTIVATE_ACCOUNT,
+        context,
       );
 
       return {
-        message: `User created, an email was sent in order to acctivate the account`,
+        message: `User created, an email was sent in order to activate the account`,
       };
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -67,8 +82,6 @@ export class UsersService {
 
   async resetForgotPassword(token: string, forgotPassowordDto: any) {
     const { email, password } = forgotPassowordDto;
-
-    console.log(forgotPassowordDto);
 
     const foundToken = await this.tokenService.validateToken(token, email);
     const user = await this.findUserByEmail(foundToken.email);

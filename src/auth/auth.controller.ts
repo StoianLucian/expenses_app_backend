@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Param, Post, Res, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Response } from 'express';
@@ -20,10 +20,9 @@ export class AuthController {
     return this.authServide.login(user, response, body);
   }
 
-  @UseGuards(JwtAuthGuard)
-  @Post('test')
-  test() {
-    return 'test';
+  @Post('activate/:token')
+  activateUser(@Param('token') token: string) {
+    return token;
   }
 
   @UseGuards(JwtRefreshAuthGuard)

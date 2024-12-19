@@ -15,16 +15,17 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     TypeOrmModule.forRoot(dataSourceOptions),
     MailerModule.forRoot({
       transport: {
-        host: 'sandbox.smtp.mailtrap.io',
-        port: 2525,
+        host: 'smtp.gmail.com',
+        port: 465,
+        secure: true,
         auth: {
-          user: '6bcd16d2f9005c',
-          pass: '7e27b429a90992',
+          user: 'stoian.lucian1996@gmail.com',
+          pass: 'irfx edtt ifrf mnam',
         },
       },
 
       defaults: {
-        from: 'No replay <no-reply@test.com>',
+        from: 'Expenses_app <stoian.lucian1996@gmail.com>',
       },
 
       template: {

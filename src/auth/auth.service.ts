@@ -1,6 +1,7 @@
 import {
   forwardRef,
   HttpException,
+  HttpStatus,
   Inject,
   Injectable,
   UnauthorizedException,
@@ -38,6 +39,12 @@ export class AuthService {
   async login(user: any, response: Response, body: any) {
     const { remember } = body;
 
+    await this.checkUserActive(user.id);
+
+    if (user.is_active === 0) {
+      throw new HttpException('account not active', HttpStatus.FORBIDDEN);
+    }
+
     const token = this.jwtService.sign(user, {
       secret: 'test2',
       expiresIn: '1d',
@@ -62,5 +69,15 @@ export class AuthService {
     }
 
     return { message: `Succesfully logged in as ${user.email}`, user: user };
+  }
+
+  
+
+  async checkUserActive(id: number) {
+    const user = await this.userService.findUserById(id);
+
+    if (user.is_active === 0) {
+      throw new HttpException('account not active', HttpStatus.FORBIDDEN);
+    }
   }
 }

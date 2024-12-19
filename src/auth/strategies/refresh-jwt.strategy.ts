@@ -19,7 +19,6 @@ export class RefreshJwtStrategy extends PassportStrategy(
   }
 
   validate(payload: any) {
-    console.log('refresh');
     return payload;
   }
 }

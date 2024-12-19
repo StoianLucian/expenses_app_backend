@@ -19,7 +19,5 @@ export class MailService {
       template: `./${template}`,
       context: context,
     });
-
-    console.log(email);
   }
 }
