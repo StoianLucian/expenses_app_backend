@@ -93,6 +93,6 @@ export class TokenService {
       throw new HttpException('UNAUTHORIzED', HttpStatus.FORBIDDEN);
     }
 
-    return foundToken;
+    return foundToken[0];
   }
 }

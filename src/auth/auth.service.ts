@@ -22,7 +22,7 @@ export class AuthService {
     try {
       const user = await this.userService.findUserByEmail(email);
 
-      const isMatch = await compare(pass, user[0].password);
+      const isMatch = await compare(pass, user.password);
       if (!isMatch) {
         throw new UnauthorizedException();
       }

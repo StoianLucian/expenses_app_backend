@@ -12,7 +12,6 @@ import { EntityManager, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { MailService } from 'src/mail/mail.service';
 import { TemplatesTypes } from 'src/mail/types/email';
-import { randomBytes } from 'crypto';
 import { TokenService } from 'src/token/token.service';
 
 @Injectable()
@@ -59,17 +58,41 @@ export class UsersService {
         TemplatesTypes.RESET_PASSWORD,
         context,
       );
+
+      return { message: 'An email was send to reset your password' };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
   async resetForgotPassword(token: string, forgotPassowordDto: any) {
-    const { email } = forgotPassowordDto;
+    const { email, password } = forgotPassowordDto;
+
+    console.log(forgotPassowordDto);
 
     const foundToken = await this.tokenService.validateToken(token, email);
+    const user = await this.findUserByEmail(foundToken.email);
 
-    return foundToken[0];
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const resetPassword = await this.entityManager.query(
+      `
+      UPDATE users 
+      SET password = ?
+      WHERE email = ?
+      `,
+      [hashedPassword, user.email],
+    );
+
+    const deleteToken = await this.entityManager.query(
+      `
+      DELETE FROM tokens
+      WHERE token = ?
+      `,
+      [foundToken.token],
+    );
+
+    return { message: 'Password updated successfully' };
   }
 
   async findUserById(id: number) {
@@ -116,9 +139,14 @@ export class UsersService {
   }
 
   async validateUserIsUnique(email: string) {
-    const existingUser = await this.findUserByEmail(email);
+    const existingUser = await this.entityManager.query(
+      `
+      SELECT * FROM users WHERE email = ?
+      `,
+      [email],
+    );
 
-    if (existingUser) {
+    if (existingUser.length > 0 && existingUser[0].email === email) {
       throw new HttpException('user already exists', HttpStatus.CONFLICT);
     }
   }
