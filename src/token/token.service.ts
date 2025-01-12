@@ -7,7 +7,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { CreateTokenDto } from './dto/create-token.dto';
-import { UpdateTokenDto } from './dto/update-token.dto';
 import { EntityManager } from 'typeorm';
 import { randomBytes } from 'crypto';
 import { UsersService } from 'src/users/users.service';
@@ -59,7 +58,7 @@ export class TokenService {
   }
 
   async generateResetToken(email: string) {
-    const generatedToken = randomBytes(32).toString('hex');
+    const generatedToken = this.generateToken(32);
 
     const token = await this.entityManager.query(
       `
@@ -90,9 +89,19 @@ export class TokenService {
     );
 
     if (foundToken.length === 0) {
-      throw new HttpException('UNAUTHORIzED', HttpStatus.FORBIDDEN);
+      throw new HttpException('UNAUTHORIZED', HttpStatus.FORBIDDEN);
     }
 
     return foundToken[0];
+  }
+
+  async clearToken(token: string) {
+    await this.entityManager.query(
+      `
+      DELETE FROM tokens
+      WHERE token = ?
+      `,
+      [token],
+    );
   }
 }

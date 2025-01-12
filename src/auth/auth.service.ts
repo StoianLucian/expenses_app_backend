@@ -9,7 +9,9 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { compare } from 'bcryptjs';
 import { Response } from 'express';
+import { TokenService } from 'src/token/token.service';
 import { UsersService } from 'src/users/users.service';
+import { EntityManager } from 'typeorm';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +19,9 @@ export class AuthService {
     @Inject(forwardRef(() => UsersService))
     private readonly userService: UsersService,
     private readonly jwtService: JwtService,
+    @Inject(forwardRef(() => TokenService))
+    private readonly tokenService: TokenService,
+    private readonly entityManager: EntityManager,
   ) {}
 
   async validateUser(email: string, pass: string) {
@@ -71,7 +76,14 @@ export class AuthService {
     return { message: `Succesfully logged in as ${user.email}`, user: user };
   }
 
-  
+  async activateUser(token: string) {
+    const { email, token: foundToken } =
+      await this.tokenService.findToken(token);
+
+    await this.setUserActive(email, foundToken);
+
+    return `${email} activated`;
+  }
 
   async checkUserActive(id: number) {
     const user = await this.userService.findUserById(id);
@@ -79,5 +91,18 @@ export class AuthService {
     if (user.is_active === 0) {
       throw new HttpException('account not active', HttpStatus.FORBIDDEN);
     }
+  }
+
+  async setUserActive(email: string, token: string) {
+    await this.entityManager.query(
+      `
+      UPDATE users
+      SET is_active = 1
+      WHERE email = ?
+      `,
+      [email],
+    );
+
+    await this.tokenService.clearToken(token);
   }
 }

@@ -104,6 +104,7 @@ export class UsersService {
       `,
       [foundToken.token],
     );
+    await this.tokenService.clearToken(foundToken.token);
 
     return { message: 'Password updated successfully' };
   }
