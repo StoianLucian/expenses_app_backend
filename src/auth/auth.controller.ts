@@ -22,7 +22,7 @@ export class AuthController {
 
   @Post('activate/:token')
   activateUser(@Param('token') token: string) {
-    return token;
+    return this.authServide.activateUser(token);
   }
 
   @UseGuards(JwtRefreshAuthGuard)
