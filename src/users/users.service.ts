@@ -25,7 +25,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { email, password, roleId } = createUserDto;
+    const { email, password } = createUserDto;
 
     try {
       await this.validateUserIsUnique(createUserDto.email);
@@ -34,7 +34,7 @@ export class UsersService {
 
       const user = await this.entityManager.query(
         `INSERT INTO users (email, password, roleId) values (?, ?, ?)`,
-        [email, hashedPassword, roleId],
+        [email, hashedPassword, 1],
       );
 
       const token = await this.tokenService.generateResetToken(email);
