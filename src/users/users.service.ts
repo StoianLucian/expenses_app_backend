@@ -24,6 +24,23 @@ export class UsersService {
     private readonly tokenService: TokenService,
   ) {}
 
+  async isUserUnique(data: any) {
+    const { email } = data;
+
+    const existingUser = await this.entityManager.query(
+      `
+      SELECT * FROM users WHERE email = ?
+      `,
+      [data.email],
+    );
+
+    if (existingUser.length > 0 && existingUser[0].email === email) {
+      return { error: true, message: 'user already exists' };
+    } else {
+      return { error: false, message: '' };
+    }
+  }
+
   async create(createUserDto: CreateUserDto) {
     const { email, password } = createUserDto;
 
