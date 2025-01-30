@@ -23,10 +23,4 @@ export class UsersController {
   ) {
     return this.usersService.resetForgotPassword(token, forgotPassowordDto);
   }
-
-  @Post('unique')
-  isUniquie(@Body() email: string) {
-    console.log(email, 'data');
-    return this.usersService.isUserUnique(email)
-  }
 }

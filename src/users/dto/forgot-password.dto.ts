@@ -6,14 +6,14 @@ import {
   MinLength,
 } from 'class-validator';
 import {
-  lowerCaseRegex,
-  numbersRegex,
   specialCharRegex,
+  lowerCaseRegex,
   upperCaseRegex,
+  numbersRegex,
 } from 'db/shared/regex';
 
-export class CreateUserDto {
-  @IsEmail({}, { message: 'Invalid email format' })
+export class ForgotPasswordDto {
+  @IsEmail()
   email: string;
 
   @IsNotEmpty({ message: 'Password is required' })
@@ -32,6 +32,4 @@ export class CreateUserDto {
     message: 'Password must contain at least on number',
   })
   password: string;
-
-  // roleId: number; sets default to 1
 }

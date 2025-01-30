@@ -89,7 +89,14 @@ export class TokenService {
     );
 
     if (foundToken.length === 0) {
-      throw new HttpException('UNAUTHORIZED', HttpStatus.FORBIDDEN);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.FORBIDDEN,
+          errors: { token: 'invalid token' },
+          message: 'UNAUTHORIZED',
+        },
+        HttpStatus.FORBIDDEN,
+      );
     }
 
     return foundToken[0];

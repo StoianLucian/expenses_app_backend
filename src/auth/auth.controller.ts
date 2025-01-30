@@ -5,6 +5,7 @@ import { Response } from 'express';
 import { GetUserFromRequest } from './customDecorator/current-user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from './guards/refresh-jwt.guard';
+import { TokenDto } from './dto/token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -21,8 +22,8 @@ export class AuthController {
   }
 
   @Post('activate/:token')
-  activateUser(@Param('token') token: string) {
-    return this.authServide.activateUser(token);
+  activateUser(@Param() params: TokenDto) {
+    return this.authServide.activateUser(params.token);
   }
 
   @UseGuards(JwtRefreshAuthGuard)

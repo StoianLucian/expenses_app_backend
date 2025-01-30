@@ -178,7 +178,14 @@ export class UsersService {
     );
 
     if (existingUser.length > 0 && existingUser[0].email === email) {
-      throw new HttpException('user already exists', HttpStatus.CONFLICT);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.FORBIDDEN,
+          errors: { token: 'invalid token' },
+          message: 'UNAUTHORIZED',
+        },
+        HttpStatus.FORBIDDEN,
+      );
     }
   }
 }
