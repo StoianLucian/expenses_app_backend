@@ -71,7 +71,7 @@ export class UsersService {
         message: `User created, an email was sent in order to activate the account`,
       };
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      throw error;
     }
   }
 
@@ -93,7 +93,7 @@ export class UsersService {
 
       return { message: 'An email was send to reset your password' };
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      throw error;
     }
   }
 
@@ -139,7 +139,7 @@ export class UsersService {
 
       return user[0];
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      throw error;
     }
   }
 
@@ -158,7 +158,7 @@ export class UsersService {
 
       return user[0];
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      throw error;
     }
   }
 
@@ -181,7 +181,7 @@ export class UsersService {
       throw new HttpException(
         {
           statusCode: HttpStatus.FORBIDDEN,
-          errors: { token: 'invalid token' },
+          errors: [{ email: 'email already in use' }],
           message: 'UNAUTHORIZED',
         },
         HttpStatus.FORBIDDEN,

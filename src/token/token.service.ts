@@ -45,9 +45,9 @@ export class TokenService {
         [tokenId[0].id],
       );
 
-      return 'test';
+      return 'Email sent';
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      throw error;
     }
   }
 
@@ -92,7 +92,7 @@ export class TokenService {
       throw new HttpException(
         {
           statusCode: HttpStatus.FORBIDDEN,
-          errors: { token: 'invalid token' },
+          errors: [{ token: 'invalid token' }],
           message: 'UNAUTHORIZED',
         },
         HttpStatus.FORBIDDEN,

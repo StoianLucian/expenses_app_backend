@@ -37,7 +37,7 @@ export class AuthService {
 
       return result;
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      throw error
     }
   }
 
