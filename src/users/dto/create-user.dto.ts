@@ -33,5 +33,24 @@ export class CreateUserDto {
   })
   password: string;
 
+  @IsNotEmpty({ message: 'Confirm password is required' })
+  @IsString()
+  @MinLength(10, {
+    message: 'Confirm password must be at lest 10 characters long',
+  })
+  @Matches(specialCharRegex, {
+    message: 'Confirm password must contain at least one special character',
+  })
+  @Matches(lowerCaseRegex, {
+    message: 'Confirm password must contain at least one lower case character',
+  })
+  @Matches(upperCaseRegex, {
+    message: 'Confirm password must contain at least one upper case character',
+  })
+  @Matches(numbersRegex, {
+    message: 'Confirm password must contain at least on number',
+  })
+  confirmPassword: string;
+
   // roleId: number; sets default to 1
 }
