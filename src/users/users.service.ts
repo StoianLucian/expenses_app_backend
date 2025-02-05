@@ -22,7 +22,7 @@ export class UsersService {
     private readonly mailService: MailService,
     @Inject(forwardRef(() => TokenService))
     private readonly tokenService: TokenService,
-  ) {}
+  ) { }
 
   async isUserUnique(data: any) {
     const { email } = data;
@@ -153,7 +153,14 @@ export class UsersService {
       );
 
       if (user.length === 0) {
-        throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.FORBIDDEN,
+            errors: [{ email: 'user not found' }],
+            message: 'UNAUTHORIZED',
+          },
+          HttpStatus.FORBIDDEN,
+        );
       }
 
       return user[0];

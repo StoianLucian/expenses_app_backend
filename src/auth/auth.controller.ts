@@ -6,17 +6,18 @@ import { GetUserFromRequest } from './customDecorator/current-user.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { JwtRefreshAuthGuard } from './guards/refresh-jwt.guard';
 import { TokenDto } from './dto/token.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authServide: AuthService) {}
+  constructor(private readonly authServide: AuthService) { }
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   login(
     @Res({ passthrough: true }) response: Response,
     @GetUserFromRequest() user: any,
-    @Body() body: any,
+    @Body() body: LoginUserDto,
   ) {
     return this.authServide.login(user, response, body);
   }

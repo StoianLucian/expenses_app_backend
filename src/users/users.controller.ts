@@ -1,10 +1,11 @@
 import { Controller, Post, Body, Param } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @Post()
   create(@Body() createUserDto: CreateUserDto) {
@@ -12,7 +13,7 @@ export class UsersController {
   }
 
   @Post('forgot-password')
-  sendForgotPasswordEmail(@Body() forgotPassowordDto: any) {
+  sendForgotPasswordEmail(@Body() forgotPassowordDto: ForgotPasswordDto) {
     return this.usersService.sendForgotPasswordEmail(forgotPassowordDto);
   }
 
