@@ -17,7 +17,7 @@ export class TokenService {
     private readonly entityManager: EntityManager,
     @Inject(forwardRef(() => UsersService))
     private readonly usersService: UsersService,
-  ) {}
+  ) { }
 
   async sendForgotPasswordEmail(createTokenDto: CreateTokenDto) {
     try {
@@ -58,13 +58,15 @@ export class TokenService {
   }
 
   async generateResetToken(email: string) {
+
+    const currentDateAndTime = new Date();
     const generatedToken = this.generateToken(32);
 
     const token = await this.entityManager.query(
       `
         INSERT INTO tokens (token, email, expiry_date) values (?, ?, ?)
       `,
-      [generatedToken, email, '2024-12-18'],
+      [generatedToken, email, currentDateAndTime],
     );
 
     return generatedToken;

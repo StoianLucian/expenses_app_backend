@@ -77,12 +77,18 @@ export class AuthService {
   }
 
   async activateUser(token: string) {
-    const { email, token: foundToken } =
-      await this.tokenService.findToken(token);
 
-    await this.setUserActive(email, foundToken);
+    try {
+      const { email, token: foundToken } =
+        await this.tokenService.findToken(token);
 
-    return `${email} activated`;
+      await this.setUserActive(email, foundToken);
+
+      return `${email} activated`;
+    } catch (error) {
+      throw error;
+    }
+
   }
 
   async checkUserActive(id: number) {

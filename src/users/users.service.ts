@@ -98,32 +98,32 @@ export class UsersService {
   }
 
   async resetForgotPassword(token: string, forgotPassowordDto: any) {
-    const { email, password } = forgotPassowordDto;
+    try {
+      const { email, password } = forgotPassowordDto;
 
-    const foundToken = await this.tokenService.validateToken(token, email);
-    const user = await this.findUserByEmail(foundToken.email);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+      const foundToken = await this.tokenService.validateToken(token, email);
 
-    const resetPassword = await this.entityManager.query(
-      `
-      UPDATE users 
-      SET password = ?
-      WHERE email = ?
-      `,
-      [hashedPassword, user.email],
-    );
+      const user = await this.findUserByEmail(foundToken.email);
 
-    const deleteToken = await this.entityManager.query(
-      `
-      DELETE FROM tokens
-      WHERE token = ?
-      `,
-      [foundToken.token],
-    );
-    await this.tokenService.clearToken(foundToken.token);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
-    return { message: 'Password updated successfully' };
+      const resetPassword = await this.entityManager.query(
+        `
+        UPDATE users 
+        SET password = ?
+        WHERE email = ?
+        `,
+        [hashedPassword, user.email],
+      );
+
+      await this.tokenService.clearToken(foundToken.token);
+
+      return { message: 'Password updated successfully' };
+    } catch (error) {
+      throw error
+    }
+
   }
 
   async findUserById(id: number) {
