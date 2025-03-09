@@ -17,6 +17,11 @@ export class UsersController {
     return this.usersService.sendForgotPasswordEmail(forgotPassowordDto);
   }
 
+  @Post('resend/:token')
+  resendActivateAccountEmail(@Param('token') token: string | undefined) {
+    return this.usersService.resendActivateAccountEmail(token)
+  }
+
   @Post('forgot-password/:token')
   resetForgotPassword(
     @Body() forgotPassowordDto: any,

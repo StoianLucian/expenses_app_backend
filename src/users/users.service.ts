@@ -97,6 +97,30 @@ export class UsersService {
     }
   }
 
+  async resendActivateAccountEmail(token: string | undefined) {
+
+    try {
+      const foundToken = await this.tokenService.findToken(token)
+
+      const generatedToken = await this.tokenService.generateResetToken(foundToken.email)
+
+      const context = {
+        email: foundToken.email,
+        token: generatedToken,
+      }
+
+      await this.mailService.sendEmail(
+        foundToken.email,
+        'Resend activation account token',
+        TemplatesTypes.RESENT_ACTIVATE_ACCOUNT_TOKEN,
+        context,
+      );
+      return { message: 'An email was send to activate your account' };
+    } catch (error) {
+      throw error
+    }
+  }
+
   async resetForgotPassword(token: string, forgotPassowordDto: any) {
     try {
       const { email, password } = forgotPassowordDto;
