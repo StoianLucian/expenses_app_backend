@@ -1,7 +1,7 @@
 import { IsEmail, IsNotEmpty, IsString, Matches, MinLength } from "class-validator";
 import { specialCharRegex, lowerCaseRegex, upperCaseRegex, numbersRegex } from "db/shared/regex";
 
-export class resetPasswordDto {
+export class ResetPasswordDto {
     @IsEmail()
     email: string;
 

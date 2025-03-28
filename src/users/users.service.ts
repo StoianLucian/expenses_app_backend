@@ -123,8 +123,7 @@ export class UsersService {
 
   async resetForgotPassword(token: string, forgotPassowordDto: any) {
     try {
-      const { email, password } = forgotPassowordDto;
-
+      const { email, password, confirmPassword } = forgotPassowordDto;
 
       const foundToken = await this.tokenService.validateToken(token, email);
 
@@ -143,11 +142,13 @@ export class UsersService {
 
       await this.tokenService.clearToken(foundToken.token);
 
-      return { message: 'Password updated successfully' };
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'password changed successfully',
+      };
     } catch (error) {
       throw error
     }
-
   }
 
   async findUserById(id: number) {
