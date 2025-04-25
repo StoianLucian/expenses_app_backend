@@ -38,3 +38,5 @@ bootstrap();
 // npx typeorm migration:create db/migrations/YourMigrationName
 //  npx typeorm migration:run -d dist/db/data-source.js
 // npm run migration:generate -- db/migrations/MIGRATIONNAME
+
+// in order to run migration first run npm run start:dev for it to build in the dist folder
