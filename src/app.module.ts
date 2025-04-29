@@ -9,6 +9,7 @@ import { TokenModule } from './token/token.module';
 import { MailModule } from './mail/mail.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { ExpensesModule } from './expenses/expenses.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     AuthModule,
     TokenModule,
     MailModule,
+    ExpensesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
