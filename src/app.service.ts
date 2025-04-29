@@ -17,4 +17,16 @@ export class AppService {
       throw error;
     }
   }
+
+  async getExpensesTypes() {
+    try {
+      const expensesType = await this.entityManager.query(`
+        SELECT * from expenses_type
+        `)
+
+      return expensesType
+    } catch (error) {
+      throw error
+    }
+  }
 }

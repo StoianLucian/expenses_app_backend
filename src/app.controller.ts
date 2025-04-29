@@ -9,4 +9,9 @@ export class AppController {
   getHello() {
     return this.appService.getMonths();
   }
+
+  @Get("expenses_types")
+  getExpensesTypes() {
+    return this.appService.getExpensesTypes();
+  }
 }
