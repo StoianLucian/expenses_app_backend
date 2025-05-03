@@ -16,4 +16,7 @@ export class CreateExpenseDto {
     @IsNumber()
     typeId: number;
 
+    @IsNumber()
+    user_id: number;
+
 }
