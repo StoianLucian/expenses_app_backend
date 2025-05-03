@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateExpenseDto } from './dto/create-expense.dto';
 import { UpdateExpenseDto } from './dto/update-expense.dto';
 import { EntityManager } from 'typeorm';
+import { User } from 'src/users/entities/user.entity';
 
 @Injectable()
 export class ExpensesService {
@@ -11,16 +12,17 @@ export class ExpensesService {
     private readonly entityManager: EntityManager
   ) { }
 
-  async create(createExpenseDto: CreateExpenseDto) {
+  async create(createExpenseDto: CreateExpenseDto, user: User) {
 
-    const { amount, description, monthId, typeId } = createExpenseDto
+    const { amount, description, transactionDate, monthId, typeId } = createExpenseDto;
 
     try {
-      const newExpense = await this.entityManager.query(`
-        
-        INSERT INTO expenses(amount, description , month_id, type_id), VALUES (?, ?, ?)
-        
-        `, [amount, description, monthId, typeId])
+      const newExpense = await this.entityManager.query(
+        `
+      INSERT INTO expenses (amount, description, transaction_date, month_id, type_id, user_id) VALUES (?, ?, ?, ?, ?, ?)
+      `,
+        [amount, description, transactionDate, monthId, typeId, user.id],
+      );
 
       return "expense created"
 

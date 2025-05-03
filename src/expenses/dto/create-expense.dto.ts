@@ -1,4 +1,5 @@
-import { IsDate, IsNumber, isNumber, IsString } from "class-validator";
+import { Type } from "class-transformer";
+import { IsDate, IsNumber, IsString } from "class-validator";
 
 export class CreateExpenseDto {
     @IsNumber()
@@ -8,6 +9,7 @@ export class CreateExpenseDto {
     description: string;
 
     @IsDate()
+    @Type(() => Date)
     transactionDate: Date;
 
     @IsNumber()
@@ -15,8 +17,5 @@ export class CreateExpenseDto {
 
     @IsNumber()
     typeId: number;
-
-    @IsNumber()
-    user_id: number;
 
 }
